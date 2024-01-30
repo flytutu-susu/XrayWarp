@@ -7,78 +7,107 @@ https://developers.cloudflare.com/warp-client/setting-up/linux
 
 这里写下我的配置过程
 
-1.注册客户端
-```
-warp-cli register
-```
-2.设置WARP代理模式
-```
-warp-cli set-mode proxy
-```
-3.连接WARP
-```
-warp-cli connect
-```
-此时WARP会使用socks5本机代理127.0.0.1：40000
-4.打开warp always-on
-```
-warp-cli enable-always-on
-```
-6.测试socks代，理检查ip是否改变
-```
-export ALL_PROXY=socks5://127.0.0.1:40000
-curl ifconfig.me
-```
-7.修改v2ray/xray outbounds和分流规则，这里给出我的配置可自由发挥。
-```
-vim /usr/local/etc/xray/config.json
-```
-inbounds要启动sniffing
-```
-"sniffing": {
-    "enabled": true,
-    "destOverride": ["http", "tls"]
-}
-```
-```
- "outbounds": [
-        {
-            "tag": "default",
-            "protocol": "freedom"
-        },
-        {
-            "tag":"socks_out",
-            "protocol": "socks",
-            "settings": {
-                "servers": [
-                     {
-                        "address": "127.0.0.1",
-                        "port": 40000
-                    }
-                ]
-            }
-        }
-    ],
-    "routing": {
-        "rules": [
-            {
-                "type": "field",
-                "outboundTag": "socks_out",
-                "domain": ["geosite:netflix"]
-            },
-            {
-                "type": "field",
-                "outboundTag": "default",
-                "network": "udp,tcp"
-            }
-        ]
-    }
-```
-8.重新启动v2ray/xray
-```
-systemctl restart v2ray/xray
-systemctl status v2ray/xray
-```
-xray可能需要下载geosite和geoip，
-google github上就能找到，下载后放在 /usr/local/bin
+1. 注册客户端
+
+   ```shell
+   warp-cli register
+   ```
+
+2. 设置WARP代理模式
+
+   ```shell
+   warp-cli set-mode proxy
+   ```
+
+3. 连接WARP
+
+   ```shell
+   warp-cli connect
+   ```
+
+​		此时WARP会使用socks5本机代理127.0.0.1：40000
+
+4. 打开warp always-on
+
+   ```shell
+   warp-cli enable-always-on
+   ```
+
+5. 测试socks代，理检查ip是否改变
+
+   ```shell
+   export ALL_PROXY=socks5://127.0.0.1:40000
+   curl ifconfig.me
+   ```
+
+6. 打开x-ui的配置文件
+
+   ```shell
+   vim /usr/local/x-ui/bin/config.json	
+   ```
+
+7. 修改sniffing段落，inbounds要启动sniffing
+
+   ```json
+   "sniffing": {
+       "enabled": true,
+       "destOverride": ["http", "tls"]
+   }
+   ```
+
+8. 修改outbounds和分流规则，我的配置是代理转发了netflix和openai
+
+   ```json
+    "outbounds": [
+           {
+               "tag": "default",
+               "protocol": "freedom"
+           },
+           {
+               "tag":"socks_out",
+               "protocol": "socks",
+               "settings": {
+                   "servers": [
+                        {
+                           "address": "127.0.0.1",
+                           "port": 40000
+                       }
+                   ]
+               }
+           }
+       ],
+       "routing": {
+           "rules": [
+               {
+                   "type": "field",
+                   "outboundTag": "socks_out",
+                   "domain": [
+                   	"geosite:netflix",
+              			"geosite:openai",
+              			"domain:statsigapi.net"
+            		]
+               },
+               {
+                   "type": "field",
+                   "outboundTag": "default",
+                   "network": "udp,tcp"
+               }
+           ]
+       }
+   ```
+
+9. 更新geosite和geoip
+
+   ```shell
+   curl -s -L -o /usr/local/x-ui/bin/geosite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
+   curl -s -L -o /usr/local/x-ui/bin/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
+   ```
+
+10. 重新启动x-ui的xray
+
+    ```shell
+    x-ui
+    ```
+
+
 
