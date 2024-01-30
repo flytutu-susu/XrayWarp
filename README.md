@@ -83,8 +83,8 @@ https://developers.cloudflare.com/warp-client/setting-up/linux
                    "outboundTag": "socks_out",
                    "domain": [
                    	"geosite:netflix",
-              			"geosite:openai",
-              			"domain:statsigapi.net"
+                   	"geosite:openai",
+                   	"domain:statsigapi.net"
             		]
                },
                {
