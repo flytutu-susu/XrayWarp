@@ -55,7 +55,7 @@ https://developers.cloudflare.com/warp-client/setting-up/linux
    }
    ```
 
-8. 修改outbounds和分流规则，我的配置是代理转发了netflix和openai
+8. 修改outbounds和分流规则，我的配置是代理转发了netflix和openai、binance(通过cf代理的ip访问币安)
 
    ```json
     "outbounds": [
@@ -84,7 +84,8 @@ https://developers.cloudflare.com/warp-client/setting-up/linux
                    "domain": [
                    	"geosite:netflix",
                    	"geosite:openai",
-                   	"domain:statsigapi.net"
+                   	"geosite:instagram",
+                       "geosite:binance"
             		]
                },
                {
